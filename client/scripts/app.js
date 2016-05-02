@@ -7,6 +7,9 @@ let app = {
   init: () => {
     $('.username').on('click', app.addFriend);
     $('#send .submit').on('submit', app.handleSubmit);
+
+    // setInterval(app.fetch, 2000);
+    app.fetch();
   },
 
   send: (message) => {
@@ -34,6 +37,11 @@ let app = {
       success: (data) => {
         console.log('chatterbox: messages received');
         console.log('SUCCESS GET: ', data);
+
+        app.clearMessages();
+        for (let message of data.results) {
+          app.addMessage(message);
+        }
       },
       error: (data) => {
         // See: https://developer.mozilla.org/en-US/docs/Web/API/console.error
@@ -47,7 +55,7 @@ let app = {
   },
 
   addMessage: (message) => {
-    $('#chats').append( '<p>[' + message.roomname + '] <span class="username">' + message.username + '</span>: ' + message.text + '</p>' );
+    $('#chats').append('<p>[' + app.sanitize(message.roomname) + '] <span class="username">' + app.sanitize(message.username) + '</span>: ' + app.sanitize(message.text) + '</p>' );
 
   },
 
@@ -61,6 +69,14 @@ let app = {
 
   handleSubmit: () => {
 
+  },
+
+  sanitize: (message) => {
+    let div = document.createElement('div');
+    div.appendChild(document.createTextNode(message));
+    return div.innerHTML;
   }
+
+
 
 };
