@@ -5,8 +5,8 @@ let app = {
   server: 'https://api.parse.com/1/classes/messages',
 
   init: () => {
-    
-
+    $('.username').on('click', app.addFriend);
+    $('#send .submit').on('submit', app.handleSubmit);
   },
 
   send: (message) => {
@@ -47,11 +47,20 @@ let app = {
   },
 
   addMessage: (message) => {
-    $('#chats').append( '<p>' + message + '</p>' );
+    $('#chats').append( '<p>[' + message.roomname + '] <span class="username">' + message.username + '</span>: ' + message.text + '</p>' );
+
   },
 
   addRoom: (room) => {
     $('#roomSelect').append( '<p>' + room + '</p>' );
+  },
+
+  addFriend: () => {
+
+  },
+
+  handleSubmit: () => {
+
   }
 
 };
