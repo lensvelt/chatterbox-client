@@ -73,10 +73,11 @@ let app = {
 
   addRoom: (room) => {
     $('#roomSelect').append( '<p class = "room">' + room + '</p>' );
+    $('.room').on('click', app.switchRoom);
   },
 
   switchRoom: function() {
-    // debugger;
+  
     // toggle visibility based on selected room
     $('.' + app.cleanClassName(app.currentRoom)).toggle();
     app.currentRoom = this.innerHTML;
@@ -105,7 +106,9 @@ let app = {
   },
 
   addEventHandlers: () => {
-    $('.room').on('click', app.switchRoom);
+    // $('.room').on('click', app.switchRoom);
+    // $('#newRoomSubmit .submit').on('click', app.addRoom($('#newRoom').val()));
+    $('#newRoomSubmit .submit').on('click', app.addRoom('testname'));
     $('.username').on('click', app.addFriend);
     $('#send .submit').on('submit', app.handleSubmit);
   }
