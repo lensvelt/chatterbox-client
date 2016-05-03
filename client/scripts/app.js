@@ -5,6 +5,7 @@ let app = {
   server: 'https://api.parse.com/1/classes/messages',
   messages: [],
   rooms: {},
+  friends: {},
   currentRoom: 'undefined',
 
   init: () => {
@@ -84,12 +85,16 @@ let app = {
     $('.' + app.cleanClassName(app.currentRoom)).toggle();
   },
 
-  addFriend: () => {
-    console.log('Added Friend');
+  addFriend: (friendName) => {
+    console.log(friendName);
+
+    if (!app.friends[friendName]) {
+      $('#friends').append( '<p class="friend">' + friendName + '</p>' );
+      app.friends[friendName] = true;
+    }
   },
 
   handleSubmit: () => {
-    // console.log( app.currentRoom, window.location.search.replace('?username=', ''), $('#text').val() ); // COME BACK HERE DAN :)
     let message = {
       roomname: app.currentRoom,
       username: window.location.search.replace('?username=', ''),
@@ -117,7 +122,7 @@ let app = {
   addEventHandlers: () => {
     $('#newRoomSubmit').on('click', () => app.addRoom( $('#newRoom').val() ) );
     $('#roomSelect').on('click', '.room', app.switchRoom);
-    $('.username').on('click', app.addFriend);
+    $('#chats').on('click', '.username', function() { app.addFriend( $(this).text() ); } );
     $('#send').on('click', app.handleSubmit);
   }
 
