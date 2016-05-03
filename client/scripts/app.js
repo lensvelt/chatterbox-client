@@ -10,7 +10,7 @@ let app = {
 
   init: () => {
     // setInterval(app.fetch, 2000);
-    app.fetch();
+    app.fetch(true);
     app.addEventHandlers();
   },
 
@@ -23,7 +23,7 @@ let app = {
       success: (data) => {
         console.log('chatterbox: Message sent');
         console.log('SUCCESS POST: ', data);
-        $('#text').val('');
+        console.log(JSON.stringify(data));
       },
       error: (data) => {
         // See: https://developer.mozilla.org/en-US/docs/Web/API/console.error
@@ -32,11 +32,43 @@ let app = {
     });
   },
 
-  fetch: () => {
+  fetch: (init = false) => {
+    if (init) {
+      var where = {
+        where:
+        {
+          roomname:
+          {
+            '$exists': true
+          }
+        }
+      };
+    } else {
+      let list = [];
+      for (room in app.rooms) {
+        if (!app.currentRoom) {
+          list.push(room);
+        }
+      }
+
+      var where = {
+        where: {
+          roomname:
+          {
+            '$nin': list,
+            '$exists': true
+          }
+        }
+      };
+    }
+
     $.ajax({
       url: app.server,
       type: 'GET',
       contentType: 'application/json',
+      data: where,
+      processData: false,
+
       success: (data) => {
         console.log('chatterbox: messages received');
         console.log('SUCCESS GET: ', data);
@@ -44,7 +76,7 @@ let app = {
         app.clearMessages();
         for (let message of app.messages) {
           message = app.sanitize(message);
-          app.addMessage(message);
+          if (message.roomname === app.currentRoom) { app.addMessage(message); }
           app.addRoom(message.roomname);
         }
       },
@@ -76,15 +108,19 @@ let app = {
     if (!app.rooms[room]) {
       $('#roomSelect').append( '<p class = "room">' + room + '</p>' );
       app.rooms[room] = true;
+      app.currentRoom = room;
+      $('#newRoom').val('');
     }
   },
 
   switchRoom: function() {
-  
-    // toggle visibility based on selected room
-    $('.' + app.cleanClassName(app.currentRoom)).toggle();
     app.currentRoom = this.innerHTML;
-    $('.' + app.cleanClassName(app.currentRoom)).toggle();
+    app.fetch();
+  
+    // // toggle visibility based on selected room
+    // $('.' + app.cleanClassName(app.currentRoom)).toggle();
+    // app.currentRoom = this.innerHTML;
+    // $('.' + app.cleanClassName(app.currentRoom)).toggle();
   },
 
   addFriend: (friendName) => {
@@ -105,11 +141,12 @@ let app = {
     };
 
     app.send(message);
-
-
+    $('#text').val('');
+    app.fetch();
   },
 
   cleanClassName: (name) => {
+    name = name.replace(/[^\w\s]/gi, '');
     return name.replace(/\s/g, '-');
   },
 
