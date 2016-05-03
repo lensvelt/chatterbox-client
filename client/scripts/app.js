@@ -42,10 +42,7 @@ let app = {
         for (let message of app.messages) {
           message = app.sanitize(message);
           app.addMessage(message);
-          if (!app.rooms[message.roomname]) {
-            app.rooms[message.roomname] = true;
-            app.addRoom(message.roomname);
-          }
+          app.addRoom(message.roomname);
         }
         app.addEventHandlers();
       },
@@ -72,8 +69,10 @@ let app = {
   },
 
   addRoom: (room) => {
-    $('#roomSelect').append( '<p class = "room">' + room + '</p>' );
-    $('.room').on('click', app.switchRoom);
+    if (!app.rooms[room]) {
+      $('#roomSelect').append( '<p class = "room">' + room + '</p>' );
+      app.rooms[room] = true;
+    }
   },
 
   switchRoom: function() {
@@ -89,7 +88,7 @@ let app = {
   },
 
   handleSubmit: () => {
-
+    console.log( app.currentRoom ); // COME BACK HERE DAN :)
   },
 
   cleanClassName: (name) => {
@@ -106,11 +105,10 @@ let app = {
   },
 
   addEventHandlers: () => {
-    // $('.room').on('click', app.switchRoom);
-    // $('#newRoomSubmit .submit').on('click', app.addRoom($('#newRoom').val()));
-    $('#newRoomSubmit .submit').on('click', app.addRoom('testname'));
+    $('#newRoomSubmit').on('click', () => app.addRoom( $('#newRoom').val() ) );
+    $('#roomSelect').on('click', '.room', app.switchRoom);
     $('.username').on('click', app.addFriend);
-    $('#send .submit').on('submit', app.handleSubmit);
+    $('#send').on('click', app.handleSubmit);
   }
 
 };
