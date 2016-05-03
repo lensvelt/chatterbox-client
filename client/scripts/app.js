@@ -3,11 +3,11 @@
 let app = {
 
   server: 'https://api.parse.com/1/classes/messages',
+  messages: [],
+  rooms: {},
+  currentRoom: 'undefined',
 
   init: () => {
-    $('.username').on('click', app.addFriend);
-    $('#send .submit').on('submit', app.handleSubmit);
-
     // setInterval(app.fetch, 2000);
     app.fetch();
   },
@@ -37,11 +37,19 @@ let app = {
       success: (data) => {
         console.log('chatterbox: messages received');
         console.log('SUCCESS GET: ', data);
-
+        app.messages = data.results;
         app.clearMessages();
-        for (let message of data.results) {
-          app.addMessage(message);
+        for (let message of app.messages) {
+          message = app.sanitize(message);
+          if ('' + message.roomname === app.currentRoom) {
+            app.addMessage(message);
+          }
+          if (!app.rooms[message.roomname]) {
+            app.rooms[message.roomname] = true;
+            app.addRoom(message.roomname);
+          }
         }
+        app.addEventHandlers();
       },
       error: (data) => {
         // See: https://developer.mozilla.org/en-US/docs/Web/API/console.error
@@ -55,16 +63,20 @@ let app = {
   },
 
   addMessage: (message) => {
-    $('#chats').append('<p>[' + app.sanitize(message.roomname) + '] <span class="username">' + app.sanitize(message.username) + '</span>: ' + app.sanitize(message.text) + '</p>' );
+    $('#chats').append('<p class="">[' + app.sanitize(message.roomname) + '] <span class="username">' + app.sanitize(message.username) + '</span>: ' + app.sanitize(message.text) + '</p>' );
 
   },
 
   addRoom: (room) => {
-    $('#roomSelect').append( '<p>' + room + '</p>' );
+    $('#roomSelect').append( '<p class = "room">' + room + '</p>' );
+  },
+
+  switchRoom: (room) => {
+    // toggle visibility based on selected room
   },
 
   addFriend: () => {
-
+    console.log('Added Friend');
   },
 
   handleSubmit: () => {
@@ -72,11 +84,18 @@ let app = {
   },
 
   sanitize: (message) => {
-    let div = document.createElement('div');
-    div.appendChild(document.createTextNode(message));
-    return div.innerHTML;
+    for (let key in message) {
+      let div = document.createElement('div');
+      div.appendChild(document.createTextNode(message[key]));
+      message[key] = div.innerHTML;
+    }
+    return message;
+  },
+
+  addEventHandlers: () => {
+    $('.room').on('click', app.switchRoom);
+    $('.username').on('click', app.addFriend);
+    $('#send .submit').on('submit', app.handleSubmit);
   }
-
-
 
 };
