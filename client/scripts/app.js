@@ -10,6 +10,7 @@ let app = {
   init: () => {
     // setInterval(app.fetch, 2000);
     app.fetch();
+    app.addEventHandlers();
   },
 
   send: (message) => {
@@ -21,6 +22,7 @@ let app = {
       success: (data) => {
         console.log('chatterbox: Message sent');
         console.log('SUCCESS POST: ', data);
+        $('#text').val('');
       },
       error: (data) => {
         // See: https://developer.mozilla.org/en-US/docs/Web/API/console.error
@@ -44,7 +46,6 @@ let app = {
           app.addMessage(message);
           app.addRoom(message.roomname);
         }
-        app.addEventHandlers();
       },
       error: (data) => {
         // See: https://developer.mozilla.org/en-US/docs/Web/API/console.error
@@ -88,7 +89,16 @@ let app = {
   },
 
   handleSubmit: () => {
-    console.log( app.currentRoom ); // COME BACK HERE DAN :)
+    // console.log( app.currentRoom, window.location.search.replace('?username=', ''), $('#text').val() ); // COME BACK HERE DAN :)
+    let message = {
+      roomname: app.currentRoom,
+      username: window.location.search.replace('?username=', ''),
+      text: $('#text').val()
+    };
+
+    app.send(message);
+
+
   },
 
   cleanClassName: (name) => {
