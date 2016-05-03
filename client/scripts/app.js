@@ -41,9 +41,7 @@ let app = {
         app.clearMessages();
         for (let message of app.messages) {
           message = app.sanitize(message);
-          if ('' + message.roomname === app.currentRoom) {
-            app.addMessage(message);
-          }
+          app.addMessage(message);
           if (!app.rooms[message.roomname]) {
             app.rooms[message.roomname] = true;
             app.addRoom(message.roomname);
@@ -63,7 +61,13 @@ let app = {
   },
 
   addMessage: (message) => {
-    $('#chats').append('<p class="">[' + app.sanitize(message.roomname) + '] <span class="username">' + app.sanitize(message.username) + '</span>: ' + app.sanitize(message.text) + '</p>' );
+    console.log(JSON.stringify(message));
+
+    if (app.cleanClassName('' + message.roomname) === app.cleanClassName(app.currentRoom)) {
+      $('#chats').append('<p class="' + app.cleanClassName('' + message.roomname) + '">[' + app.sanitize(message.roomname) + '] <span class="username">' + app.sanitize(message.username) + '</span>: ' + app.sanitize(message.text) + '</p>' );
+    } else {
+      $('#chats').append('<p class="' + app.cleanClassName('' + message.roomname) + '" style="display: none;">[' + app.sanitize(message.roomname) + '] <span class="username">' + app.sanitize(message.username) + '</span>: ' + app.sanitize(message.text) + '</p>' );
+    }
 
   },
 
@@ -71,8 +75,12 @@ let app = {
     $('#roomSelect').append( '<p class = "room">' + room + '</p>' );
   },
 
-  switchRoom: (room) => {
+  switchRoom: function() {
+    // debugger;
     // toggle visibility based on selected room
+    $('.' + app.cleanClassName(app.currentRoom)).toggle();
+    app.currentRoom = this.innerHTML;
+    $('.' + app.cleanClassName(app.currentRoom)).toggle();
   },
 
   addFriend: () => {
@@ -81,6 +89,10 @@ let app = {
 
   handleSubmit: () => {
 
+  },
+
+  cleanClassName: (name) => {
+    return name.toLowerCase().replace(/\s/g, '-');
   },
 
   sanitize: (message) => {
