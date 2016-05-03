@@ -85,6 +85,10 @@ let app = {
         console.error('chatterbox: Failed to retreive messages', data);
       }
     });
+
+    // TODO calculate counts
+    // TODO update display with the counts
+
   },
 
   clearMessages: () => {
