@@ -22,8 +22,6 @@ let app = {
       contentType: 'application/json',
       success: (data) => {
         console.log('chatterbox: Message sent');
-        console.log('SUCCESS POST: ', data);
-        console.log(JSON.stringify(data));
       },
       error: (data) => {
         // See: https://developer.mozilla.org/en-US/docs/Web/API/console.error
@@ -71,7 +69,6 @@ let app = {
 
       success: (data) => {
         console.log('chatterbox: messages received');
-        console.log('SUCCESS GET: ', data);
         app.messages = data.results;
         app.clearMessages();
         for (let message of app.messages) {
@@ -96,14 +93,12 @@ let app = {
   },
 
   addMessage: (message) => {
-    console.log(JSON.stringify(message));
-
-    var friendsClass = (app.friends[app.cleanClassName('' + message.username)] ) ? '.friend' : '';
+    var friendsClass = (app.friends[app.cleanClassName(message.username)] ) ? '.friend' : '';
 
     if (app.cleanClassName('' + message.roomname) === app.cleanClassName(app.currentRoom)) {
-      $('#chats').append('<p class="' + app.cleanClassName('' + message.roomname) + ' ' + app.cleanClassName('' + message.username) + ' ' + friendsClass + '">[' + app.sanitize(message.roomname) + '] <span class="username">' + app.sanitize(message.username) + '</span>: ' + app.sanitize(message.text) + '</p>' );
+      $('#chats').append('<p class="' + app.cleanClassName(message.roomname) + ' ' + app.cleanClassName(message.username) + ' ' + friendsClass + '">[' + app.sanitize(message.roomname) + '] <span class="username">' + app.sanitize(message.username) + '</span>: ' + app.sanitize(message.text) + '</p>' );
     } else {
-      $('#chats').append('<p class="' + app.cleanClassName('' + message.roomname) + ' ' + friendsClass + '" style="display: none;">[' + app.sanitize(message.roomname) + '] <span class="username">' + app.sanitize(message.username) + '</span>: ' + app.sanitize(message.text) + '</p>' );
+      $('#chats').append('<p class="' + app.cleanClassName(message.roomname) + ' ' + friendsClass + '" style="display: none;">[' + app.sanitize(message.roomname) + '] <span class="username">' + app.sanitize(message.username) + '</span>: ' + app.sanitize(message.text) + '</p>' );
     }
 
   },
@@ -128,8 +123,6 @@ let app = {
   },
 
   addFriend: (friendName) => {
-    console.log(friendName);
-
     if (!app.friends[friendName]) {
       $('#friends').append( '<p class="friend">' + friendName + '</p>' );
       $('#chats .' + app.cleanClassName(friendName)).addClass('friend');
@@ -150,6 +143,7 @@ let app = {
   },
 
   cleanClassName: (name) => {
+    name = '' + name;
     name = name.replace(/[^\w\s]/gi, '');
     return name.replace(/\s/g, '-');
   },
