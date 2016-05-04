@@ -124,7 +124,14 @@ let app = {
   },
 
   switchRoom: function() {
+    // highlight current room
+    $('.room').removeClass('list-group-item-success');
+    $(this).addClass('list-group-item-success');
+
+    // track current room
     app.currentRoom = this.innerHTML;
+
+    // refetch messages
     app.fetch();
   },
 
