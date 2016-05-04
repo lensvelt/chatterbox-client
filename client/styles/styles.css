@@ -1,0 +1,17 @@
+p {
+    font-weight: bold;
+    margin-bottom: 2px;
+}
+
+.new-message {
+    margin: 0 0 10px 0;
+
+}
+
+.panel {
+    margin-bottom: 5px;
+}
+.panel-body {
+    padding: 0 0 5px 5px;
+    overflow-wrap: break-word;
+}

@@ -99,11 +99,29 @@ let app = {
   addMessage: (message) => {
     var friendsClass = (app.friends[app.cleanClassName(message.username)] ) ? '.friend' : '';
 
-    if (app.cleanClassName('' + message.roomname) === app.cleanClassName(app.currentRoom)) {
-      $('#chats').append('<p class="' + app.cleanClassName(message.roomname) + ' ' + app.cleanClassName(message.username) + ' ' + friendsClass + '">[' + app.sanitize(message.roomname) + '] <span class="username">' + app.sanitize(message.username) + '</span>: ' + app.sanitize(message.text) + '</p>' );
-    } else {
-      $('#chats').append('<p class="' + app.cleanClassName(message.roomname) + ' ' + friendsClass + '" style="display: none;">[' + app.sanitize(message.roomname) + '] <span class="username">' + app.sanitize(message.username) + '</span>: ' + app.sanitize(message.text) + '</p>' );
-    }
+    let $msgPanel = $('<div class="panel panel-default">');
+
+
+    let $msgBody = $('<div class="panel-body">');
+    $msgBody.text(message.text);
+    $msgBody.appendTo($msgPanel);
+    $msgPanel.appendTo($('#chats'));
+
+    let $msgUser = $('<p>');
+    $msgUser.addClass(app.cleanClassName(message.username));
+    $msgUser.text(message.username + ':');
+    $msgUser.prependTo($msgBody);
+    //<div class="panel panel-default">
+    //  <div class="panel-body">
+    //    Basic panel example
+    // </div>
+    //</div>
+
+    // if (app.cleanClassName('' + message.roomname) === app.cleanClassName(app.currentRoom)) {
+    //   $('#chats').append('<p class="' + app.cleanClassName(message.roomname) + ' ' + app.cleanClassName(message.username) + ' ' + friendsClass + '">[' + app.sanitize(message.roomname) + '] <span class="username">' + app.sanitize(message.username) + '</span>: ' + app.sanitize(message.text) + '</p>' );
+    // } else {
+    //   $('#chats').append('<p class="' + app.cleanClassName(message.roomname) + ' ' + friendsClass + '" style="display: none;">[' + app.sanitize(message.roomname) + '] <span class="username">' + app.sanitize(message.username) + '</span>: ' + app.sanitize(message.text) + '</p>' );
+    // }
 
   },
 
