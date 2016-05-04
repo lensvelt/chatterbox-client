@@ -105,9 +105,16 @@ let app = {
 
   addRoom: (room) => {
     if (!app.rooms[room]) {
-      $('#roomSelect').append( '<p class = "room">' + room + '</p>' );
+      // append new button
+      let $newRoom = $('<button type="button" class="room list-group-item">');
+      $newRoom.text(room);
+      $newRoom.appendTo($('#roomSelect'));
+
+      // track existing rooms and current room
       app.rooms[room] = true;
       app.currentRoom = room;
+
+      // clear the new rooms input field
       $('#newRoom').val('');
     }
   },
