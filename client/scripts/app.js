@@ -6,7 +6,7 @@ let app = {
   messages: [],
   rooms: {},
   friends: {},
-  currentRoom: 'undefined',
+  currentRoom: 'Lobby',
 
   init: () => {
     // setInterval(app.fetch, 2000);
@@ -45,11 +45,12 @@ let app = {
     } else {
       let list = [];
       for (room in app.rooms) {
-        if (!app.currentRoom) {
+        if (room !== app.currentRoom) {
           list.push(room);
         }
       }
-
+      console.log(app.rooms);
+      console.log(list);  
       var where = {
         where: {
           roomname:
@@ -74,12 +75,13 @@ let app = {
         app.messages = data.results;
         app.clearMessages();
         for (let message of app.messages) {
-          message = app.sanitize(message);
+          // message = app.sanitize(message);
+          message.roomname = (message.roomname === undefined) ? 'General' : message.roomname;
           if (message.roomname === app.currentRoom) { app.addMessage(message); }
           app.addRoom(message.roomname);
         }
 
-        console.log(data.results);
+        // console.log(JSON.stringify(data, null, 2));
       },
       error: (data) => {
         // See: https://developer.mozilla.org/en-US/docs/Web/API/console.error
@@ -109,7 +111,7 @@ let app = {
 
     let $msgUser = $('<p>');
     $msgUser.addClass(app.cleanClassName(message.username));
-    $msgUser.text(message.username + ':');
+    $msgUser.text('[' + message.roomname + '] ' + message.username + ':');
     $msgUser.prependTo($msgBody);
     //<div class="panel panel-default">
     //  <div class="panel-body">
@@ -179,14 +181,14 @@ let app = {
     return name.replace(/\s/g, '-');
   },
 
-  sanitize: (message) => {
-    for (let key in message) {
-      let div = document.createElement('div');
-      div.appendChild(document.createTextNode(message[key]));
-      message[key] = div.innerHTML;
-    }
-    return message;
-  },
+  // sanitize: (message) => {
+  //   for (let key in message) {
+  //     let div = document.createElement('div');
+  //     div.appendChild(document.createTextNode(message[key]));
+  //     message[key] = div.innerHTML;
+  //   }
+  //   return message;
+  // },
 
   addEventHandlers: () => {
     $('#newRoomSubmit').on('click', () => app.addRoom( $('#newRoom').val() ) );
