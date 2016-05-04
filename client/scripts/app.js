@@ -6,12 +6,12 @@ let app = {
   messages: [],
   rooms: {},
   friends: {},
-  currentRoom: 'Lobby',
+  currentRoom: '666',
 
   init: () => {
-    // setInterval(app.fetch, 2000);
     app.fetch(true);
     app.addEventHandlers();
+    setInterval(app.fetch, 2000);
   },
 
   send: (message) => {
@@ -49,8 +49,7 @@ let app = {
           list.push(room);
         }
       }
-      console.log(app.rooms);
-      console.log(list);  
+
       var where = {
         where: {
           roomname:
@@ -74,24 +73,23 @@ let app = {
         console.log('chatterbox: messages received');
         app.messages = data.results;
         app.clearMessages();
+
         for (let message of app.messages) {
-          // message = app.sanitize(message);
-          message.roomname = (message.roomname === undefined) ? 'General' : message.roomname;
-          if (message.roomname === app.currentRoom) { app.addMessage(message); }
-          app.addRoom(message.roomname);
+          message.roomname = (message.roomname === undefined) ? 'General' : message.roomname.trim();
+          console.log(message.roomname, app.currentRoom, message.roomname === app.currentRoom);
+          if (message.roomname === app.currentRoom) { 
+            app.addMessage(message); 
+          }
+          app.addRoom(message.roomname, true);
         }
 
-        // console.log(JSON.stringify(data, null, 2));
       },
+
       error: (data) => {
         // See: https://developer.mozilla.org/en-US/docs/Web/API/console.error
         console.error('chatterbox: Failed to retreive messages', data);
       }
     });
-
-    // TODO calculate counts
-    // TODO update display with the counts
-
   },
 
   clearMessages: () => {
@@ -113,21 +111,9 @@ let app = {
     $msgUser.addClass(app.cleanClassName(message.username));
     $msgUser.text('[' + message.roomname + '] ' + message.username + ':');
     $msgUser.prependTo($msgBody);
-    //<div class="panel panel-default">
-    //  <div class="panel-body">
-    //    Basic panel example
-    // </div>
-    //</div>
-
-    // if (app.cleanClassName('' + message.roomname) === app.cleanClassName(app.currentRoom)) {
-    //   $('#chats').append('<p class="' + app.cleanClassName(message.roomname) + ' ' + app.cleanClassName(message.username) + ' ' + friendsClass + '">[' + app.sanitize(message.roomname) + '] <span class="username">' + app.sanitize(message.username) + '</span>: ' + app.sanitize(message.text) + '</p>' );
-    // } else {
-    //   $('#chats').append('<p class="' + app.cleanClassName(message.roomname) + ' ' + friendsClass + '" style="display: none;">[' + app.sanitize(message.roomname) + '] <span class="username">' + app.sanitize(message.username) + '</span>: ' + app.sanitize(message.text) + '</p>' );
-    // }
-
   },
 
-  addRoom: (room) => {
+  addRoom: (room, init = false) => {
     if (!app.rooms[room]) {
       // append new button
       let $newRoom = $('<button type="button" class="room list-group-item">');
@@ -136,8 +122,10 @@ let app = {
 
       // track existing rooms and current room
       app.rooms[room] = true;
-      app.currentRoom = room;
 
+      if (!init) {
+        app.currentRoom = room;
+      }
       // clear the new rooms input field
       $('#newRoom').val('');
     }
@@ -181,20 +169,10 @@ let app = {
     return name.replace(/\s/g, '-');
   },
 
-  // sanitize: (message) => {
-  //   for (let key in message) {
-  //     let div = document.createElement('div');
-  //     div.appendChild(document.createTextNode(message[key]));
-  //     message[key] = div.innerHTML;
-  //   }
-  //   return message;
-  // },
-
   addEventHandlers: () => {
     $('#newRoomSubmit').on('click', () => app.addRoom( $('#newRoom').val() ) );
     $('#roomSelect').on('click', '.room', app.switchRoom);
     $('#chats').on('click', '.username', function() { app.addFriend( $(this).text() ); } );
     $('#send').on('click', app.handleSubmit);
   }
-
 };
