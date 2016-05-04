@@ -38,7 +38,8 @@ let app = {
           roomname:
           {
             '$exists': true
-          }
+          },
+          order: '-createdAt'
         }
       };
     } else {
@@ -55,7 +56,8 @@ let app = {
           {
             '$nin': list,
             '$exists': true
-          }
+          },
+          order: '-createdAt'
         }
       };
     }
@@ -76,6 +78,8 @@ let app = {
           if (message.roomname === app.currentRoom) { app.addMessage(message); }
           app.addRoom(message.roomname);
         }
+
+        console.log(data.results);
       },
       error: (data) => {
         // See: https://developer.mozilla.org/en-US/docs/Web/API/console.error
@@ -122,11 +126,6 @@ let app = {
   switchRoom: function() {
     app.currentRoom = this.innerHTML;
     app.fetch();
-  
-    // // toggle visibility based on selected room
-    // $('.' + app.cleanClassName(app.currentRoom)).toggle();
-    // app.currentRoom = this.innerHTML;
-    // $('.' + app.cleanClassName(app.currentRoom)).toggle();
   },
 
   addFriend: (friendName) => {
